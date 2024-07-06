@@ -1,73 +1,92 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+CHAT API CHALLENGE
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# DEVELOPMENT
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Environment Configuration
 
-## Description
+Create `.env` file with the following content:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ pnpm install
+```
+REDIS_HOST=redis
+REDIS_PORT=6379
 ```
 
-## Running the app
+
+## Prerequisites
+
+Ensure you have the following installed on your machine:
+
+- Docker
+- Docker Compose
+
+## Build and Run with Docker Compose
+
+Build the Docker image for your Chat-API project and start the containers:
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+docker-compose up --build
 ```
 
-## Test
+## Testing the Application
+
+After the container is running, test the application by accessing it through http://localhost:3000
+
+### Example Interaction
+Start the simulated client with a  chatRoomId:
+```bash
+$ node client/client.js room1
+```
+
+You will see output
+```
+> Connected to WebSocket server in chat room room1
+Enter message (or type "exit" to quit):
+```
+
+```
+[ChatGateway] Client connected: e7rKf0lHDYwHjrN3AAAH to chat room room1
+```
+
+# DEPLOYMENT
+
+## Terraform Setup
+
+### Install Terraform:
+Download and install Terraform from terraform.io.
+
+### Configure AWS Credentials:
+Ensure your AWS credentials are configured in ~/.aws/credentials or set as environment variables.
+
+### Initialize Terraform:
+Run the following command in the directory containing your Terraform configuration files:
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+terraform init
 ```
 
-## Support
+### Deploy Infrastructure:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Apply the Terraform configuration to create AWS resources (EC2 instance and security group):
 
-## Stay in touch
+```bash
+terraform apply
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-## License
+### Follow the prompts to confirm resource creation.
 
-Nest is [MIT licensed](LICENSE).
+Accessing the EC2 Instance:
+Once deployed, SSH into your EC2 instance and ensure Docker is running:
+
+```bash
+ssh ec2-user@<your-instance-public-ip>
+sudo docker ps  # Verify Docker container is running
+exit  # Exit SSH session
+```
+
+
+### Notes
+
+- Replace placeholders (`ami-xxxxxxxxxxxxxxxx` with your actual values.
+- Ensure Docker and Node.js are installed on your local machine for building and testing the Docker image locally.
+- Modify Terraform configuration (`main.tf`) as per your specific AWS region, instance type, and security requirements.
