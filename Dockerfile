@@ -1,5 +1,5 @@
 # Use Node.js LTS version as base image
-FROM node:lts-alpine
+FROM node:18
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -13,8 +13,11 @@ RUN npm install --production
 # Copy the rest of the application code
 COPY . .
 
+# Build
+RUN npm run build
+
 # Expose the port your app runs on
 EXPOSE 3000
 
 # Command to run the app
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "run", "start"]

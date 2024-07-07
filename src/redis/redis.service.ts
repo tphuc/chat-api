@@ -1,4 +1,3 @@
-// src/redis/redis.service.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
@@ -11,7 +10,9 @@ export class RedisService {
   constructor(private configService: ConfigService) {
     const host = this.configService.get<string>('REDIS_HOST');
     const port = this.configService.get<number>('REDIS_PORT');
+
     this.logger.log(`Initializing Redis with host: ${host} and port: ${port}`);
+
     this.client = new Redis({
       host,
       port,
@@ -26,12 +27,12 @@ export class RedisService {
     });
   }
 
-  async set(key: string, value: any) {
-    await this.client.set(key, JSON.stringify(value));
+  async addMessageToRoom(roomId: string, message: any) {
+    await this.client.rpush(`chatroom:${roomId}:messages`, JSON.stringify(message));
   }
 
-  async get(key: string) {
-    const data = await this.client.get(key);
-    return JSON.parse(data);
+  async getMessagesFromRoom(roomId: string, start = 0, end = -1) {
+    const data = await this.client.lrange(`chatroom:${roomId}:messages`, start, end);
+    return data.map((item) => JSON.parse(item));
   }
 }

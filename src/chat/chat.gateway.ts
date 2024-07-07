@@ -1,4 +1,3 @@
-// src/chat/chat.gateway.ts
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -64,7 +63,7 @@ export class ChatGateway
     this.logger.log(`Message received from ${client.id} in chat room ${chatRoomId}: ${payload?.content}`);
 
     // Store message in Redis or perform other operations
-    await this.redisService.set(`message:${Date.now()}`, payload);
+    await this.redisService.addMessageToRoom(chatRoomId, payload);
 
     // Broadcast the message to all clients in the chat room
     this.server.to(chatRoomId).emit('message', { content: payload.content });
